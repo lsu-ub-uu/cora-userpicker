@@ -20,5 +20,5 @@
 package se.uu.ub.cora.userpicker;
 
 public interface UserPickerFactory {
-	public UserPicker factor();
+	UserPicker factor();
 }
