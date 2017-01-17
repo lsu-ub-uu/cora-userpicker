@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,10 @@
 
 package se.uu.ub.cora.userpicker;
 
-public interface UserPickerFactory {
-	UserPicker factor();
+import java.util.Map;
+
+public interface UserPickerProvider {
+	UserPicker getUserPicker();
+
+	Map<String, String> getInitInfo();
 }
