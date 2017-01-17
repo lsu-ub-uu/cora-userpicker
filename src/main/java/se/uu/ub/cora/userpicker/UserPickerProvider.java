@@ -19,10 +19,7 @@
 
 package se.uu.ub.cora.userpicker;
 
-import java.util.Map;
-
 public interface UserPickerProvider {
 	UserPicker getUserPicker();
 
-	Map<String, String> getInitInfo();
 }
