@@ -24,6 +24,9 @@
 
 	<name>userpicker</name>
 
+	<properties>
+		<bookkeeper.version>0.10-SNAPSHOT</bookkeeper.version>
+	</properties>
 
 	<scm>
 		<connection>scm:git:https://git.epc.ub.uu.se/epc/userpicker.git</connection>
@@ -58,7 +61,12 @@
 	</repositories>
 
 	<dependencies>
-	<dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>bookkeeper</artifactId>
+			<version>${bookkeeper.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.userpicker;
 
-public interface UserPicker {
+import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
-	User pickGuest();
+public interface UserStorage {
+	DataGroup getGuestUser();
 
-	User pickUser(UserInfo userInfo);
-
+	DataGroup getUserById(String id);
 }
