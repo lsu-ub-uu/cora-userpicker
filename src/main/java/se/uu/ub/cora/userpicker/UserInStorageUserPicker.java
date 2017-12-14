@@ -57,7 +57,7 @@ public final class UserInStorageUserPicker implements UserPicker {
 
 	private void ensureActiveUserOrGuest(UserInfo userInfo) {
 		try {
-			tryToReadActiveUserOrGuest(userInfo);
+			tryToGetActiveUserOrGuest(userInfo);
 		} catch (Exception e) {
 			readGuestUserFromStorage();
 		}
@@ -67,15 +67,23 @@ public final class UserInStorageUserPicker implements UserPicker {
 		dataGroupUser = userStorage.getGuestUser();
 	}
 
-	private void tryToReadActiveUserOrGuest(UserInfo userInfo) {
-		tryToReadLoggedInUser(userInfo);
+	private void tryToGetActiveUserOrGuest(UserInfo userInfo) {
+		if (null != userInfo.idInUserStorage) {
+			tryToGetUserByStorageId(userInfo);
+		} else {
+			tryToGetUserByIdFromLogin(userInfo);
+		}
 		if (!userIsActive()) {
 			readGuestUserFromStorage();
 		}
 	}
 
-	private void tryToReadLoggedInUser(UserInfo userInfo) {
+	private void tryToGetUserByStorageId(UserInfo userInfo) {
 		dataGroupUser = userStorage.getUserById(userInfo.idInUserStorage);
+	}
+
+	private void tryToGetUserByIdFromLogin(UserInfo userInfo) {
+		dataGroupUser = userStorage.getUserByIdFromLogin(userInfo.idFromLogin);
 	}
 
 	private void createNewUserWithUserId() {
@@ -100,8 +108,7 @@ public final class UserInStorageUserPicker implements UserPicker {
 	}
 
 	private void addUserRoleIdsToUserRoles() {
-		List<DataGroup> allGroupsWithNameInData = dataGroupUser
-				.getAllGroupsWithNameInData("userRole");
+		List<DataGroup> allGroupsWithNameInData = dataGroupUser.getAllGroupsWithNameInData("userRole");
 		for (DataGroup extractedRole : allGroupsWithNameInData) {
 			addUserRoleIdToUserRoles(extractedRole);
 		}

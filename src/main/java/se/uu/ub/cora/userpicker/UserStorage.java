@@ -25,4 +25,6 @@ public interface UserStorage {
 	DataGroup getGuestUser();
 
 	DataGroup getUserById(String id);
+
+	DataGroup getUserByIdFromLogin(String idFromLogin);
 }

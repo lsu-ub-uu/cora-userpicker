@@ -109,4 +109,31 @@ public class UserInStorageUserPickerTest {
 		assertUserId(GUEST_ID);
 	}
 
+	@Test
+	public void testUnknownUserFromLoginIsGuest() {
+		user = pickUserUsingIdFromLogin("unknown@ub.uu.se");
+		assertUserId(GUEST_ID);
+		assertOnlyOneUserRole("guest");
+	}
+
+	private User pickUserUsingIdFromLogin(String idFromLogin) {
+		UserInfo userInfo = UserInfo.withLoginId(idFromLogin);
+		User user = userPicker.pickUser(userInfo);
+		return user;
+	}
+
+	@Test
+	public void testUserFromLoginWithTwoRoles() {
+		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+		assertUserId(FITNESSE_USER_ID);
+		assertNumberOfRoles(2);
+		assertUserRoles("fitnesse", "metadataAdmin");
+	}
+
+	@Test
+	public void testInactiveUserFromLoginReturnsGuest() {
+		user = pickUserUsingIdFromLogin("other@ub.uu.se");
+		assertUserId(GUEST_ID);
+		assertOnlyOneUserRole("guest");
+	}
 }

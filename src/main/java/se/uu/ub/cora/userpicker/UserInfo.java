@@ -34,11 +34,20 @@ public final class UserInfo {
 		this.idInUserStorage = idInUserStorage;
 	}
 
+	private UserInfo() {
+	}
+
 	public static UserInfo withLoginIdAndLoginDomain(String idFromLogin, String domainFromLogin) {
 		return new UserInfo(idFromLogin, domainFromLogin);
 	}
 
 	public static UserInfo withIdInUserStorage(String idInUserStorage) {
 		return new UserInfo(idInUserStorage);
+	}
+
+	public static UserInfo withLoginId(String idFromLogin) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.idFromLogin = idFromLogin;
+		return userInfo;
 	}
 }

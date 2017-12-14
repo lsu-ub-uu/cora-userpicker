@@ -23,8 +23,6 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.userpicker.UserInfo;
-
 public class UserInfoTest {
 	@Test
 	public void testUserInfoUserInStorage() {
@@ -40,6 +38,14 @@ public class UserInfoTest {
 		String domainFromLogin = "domainFromLogin";
 
 		UserInfo userInfo = UserInfo.withLoginIdAndLoginDomain(idFromLogin, domainFromLogin);
+		assertEquals(userInfo.idFromLogin, "idFromLogin");
+	}
+
+	@Test
+	public void testUserInfoWithLoginId() {
+		String idFromLogin = "idFromLogin";
+
+		UserInfo userInfo = UserInfo.withLoginId(idFromLogin);
 		assertEquals(userInfo.idFromLogin, "idFromLogin");
 	}
 }

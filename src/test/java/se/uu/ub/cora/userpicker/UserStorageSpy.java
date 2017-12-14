@@ -26,6 +26,7 @@ public class UserStorageSpy implements UserStorage {
 	public boolean getGuestUserIsCalled = false;
 	public boolean getUserByIdIsCalled = false;
 	boolean guestIsActive = true;
+	public boolean getUserByIdFromLoginIsCalled = false;;
 
 	@Override
 	public DataGroup getGuestUser() {
@@ -73,8 +74,7 @@ public class UserStorageSpy implements UserStorage {
 
 	private static DataGroup createPermissionRoleWithPermissionRoleId(String roleName) {
 		DataGroup userRoleLink = DataGroup.withNameInData("userRole");
-		userRoleLink
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "permissionRole"));
+		userRoleLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "permissionRole"));
 		userRoleLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", roleName));
 		return userRoleLink;
 	}
@@ -89,6 +89,18 @@ public class UserStorageSpy implements UserStorage {
 			return createUserWithRecordIdAndRoleNames("666666", false, "fitnesse", "metadataAdmin");
 		}
 		return createUserWithRecordIdAndRoleNames("121212", true, "fitnesse", "metadataAdmin");
+	}
+
+	@Override
+	public DataGroup getUserByIdFromLogin(String idFromLogin) {
+		getUserByIdFromLoginIsCalled = true;
+		if ("unknown@ub.uu.se".equals(idFromLogin)) {
+			throw new RuntimeException("user not found");
+		}
+		if ("fitnesse@ub.uu.se".equals(idFromLogin)) {
+			return createUserWithRecordIdAndRoleNames("121212", true, "fitnesse", "metadataAdmin");
+		}
+		return createUserWithRecordIdAndRoleNames("141414", false, "fitnesse", "metadataAdmin");
 	}
 
 }
