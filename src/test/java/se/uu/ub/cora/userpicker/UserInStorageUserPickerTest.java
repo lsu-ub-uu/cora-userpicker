@@ -20,6 +20,7 @@
 package se.uu.ub.cora.userpicker;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -43,6 +44,8 @@ public class UserInStorageUserPickerTest {
 	public void testGuest() {
 		user = userPicker.pickGuest();
 		assertTrue(userStorage.getGuestUserIsCalled);
+		assertNull(user.firstName);
+		assertNull(user.lastName);
 	}
 
 	@Test
@@ -110,6 +113,22 @@ public class UserInStorageUserPickerTest {
 	}
 
 	@Test
+	public void testUserName() {
+		user = pickUserUsingIdInStorage("1111111");
+		assertUserId("1111111");
+		assertEquals(user.loginId, "1111111");
+		assertEquals(user.firstName, "firstName");
+		assertEquals(user.lastName, "lastName");
+	}
+
+	@Test
+	public void testUserNameMissing() {
+		user = pickUserUsingIdInStorage("12341234");
+		assertEquals(user.firstName, null);
+		assertEquals(user.lastName, null);
+	}
+
+	@Test
 	public void testUnknownUserFromLoginIsGuest() {
 		user = pickUserUsingIdFromLogin("unknown@ub.uu.se");
 		assertUserId(GUEST_ID);
@@ -125,6 +144,7 @@ public class UserInStorageUserPickerTest {
 	@Test
 	public void testUserFromLoginWithTwoRoles() {
 		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+		assertEquals(user.loginId, "fitnesse@ub.uu.se");
 		assertUserId(FITNESSE_USER_ID);
 		assertNumberOfRoles(2);
 		assertUserRoles("fitnesse", "metadataAdmin");

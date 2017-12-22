@@ -88,6 +88,13 @@ public class UserStorageSpy implements UserStorage {
 		if ("666666".equals(id)) {
 			return createUserWithRecordIdAndRoleNames("666666", false, "fitnesse", "metadataAdmin");
 		}
+		if ("1111111".equals(id)) {
+			DataGroup userGroup = createUserWithRecordIdAndRoleNames("1111111", true, "namedUser",
+					"metadataAdmin");
+			userGroup.addChild(DataAtomic.withNameInDataAndValue("userFirstname", "firstName"));
+			userGroup.addChild(DataAtomic.withNameInDataAndValue("userLastname", "lastName"));
+			return userGroup;
+		}
 		return createUserWithRecordIdAndRoleNames("121212", true, "fitnesse", "metadataAdmin");
 	}
 

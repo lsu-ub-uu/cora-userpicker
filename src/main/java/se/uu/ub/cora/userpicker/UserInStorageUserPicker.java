@@ -51,31 +51,39 @@ public final class UserInStorageUserPicker implements UserPicker {
 
 	@Override
 	public User pickUser(UserInfo userInfo) {
-		ensureActiveUserOrGuest(userInfo);
-		return convertDataGroupToUser();
+		return ensureActiveUserOrGuest(userInfo);
 	}
 
-	private void ensureActiveUserOrGuest(UserInfo userInfo) {
+	private User ensureActiveUserOrGuest(UserInfo userInfo) {
 		try {
-			tryToGetActiveUserOrGuest(userInfo);
+			return tryToGetActiveUserOrGuest(userInfo);
 		} catch (Exception e) {
-			readGuestUserFromStorage();
+			return pickGuest();
 		}
 	}
 
-	private void readGuestUserFromStorage() {
-		dataGroupUser = userStorage.getGuestUser();
-	}
-
-	private void tryToGetActiveUserOrGuest(UserInfo userInfo) {
+	private User tryToGetActiveUserOrGuest(UserInfo userInfo) {
 		if (null != userInfo.idInUserStorage) {
 			tryToGetUserByStorageId(userInfo);
 		} else {
 			tryToGetUserByIdFromLogin(userInfo);
 		}
-		if (!userIsActive()) {
-			readGuestUserFromStorage();
+		if (userIsActive()) {
+			User pickedUser = convertDataGroupToUser();
+			if (null != userInfo.idInUserStorage) {
+				pickedUser.loginId = userInfo.idInUserStorage;
+			} else {
+				pickedUser.loginId = userInfo.idFromLogin;
+			}
+			if (dataGroupUser.containsChildWithNameInData("userFirstname")) {
+				pickedUser.firstName = dataGroupUser.getFirstAtomicValueWithNameInData("userFirstname");
+			}
+			if (dataGroupUser.containsChildWithNameInData("userLastname")) {
+				pickedUser.lastName = dataGroupUser.getFirstAtomicValueWithNameInData("userLastname");
+			}
+			return pickedUser;
 		}
+		return pickGuest();
 	}
 
 	private void tryToGetUserByStorageId(UserInfo userInfo) {
