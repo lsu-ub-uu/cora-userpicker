@@ -13,7 +13,7 @@
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
+ *     You should have received DEFAULT_GUEST_USERIDa copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -21,6 +21,7 @@ package se.uu.ub.cora.userpicker;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -30,7 +31,7 @@ import org.testng.annotations.Test;
 public class UserInStorageUserPickerTest {
 	private static final String FITNESSE_USER_ID = "121212";
 	private static final String GUEST_ID = "12345";
-	private UserPicker userPicker;
+	private UserInStorageUserPicker userPicker;
 	private User user;
 
 	private UserStorageSpy userStorage;
@@ -38,7 +39,7 @@ public class UserInStorageUserPickerTest {
 	@BeforeMethod
 	public void setUp() {
 		userStorage = new UserStorageSpy();
-		userPicker = UserInStorageUserPicker.usingUserStorage(userStorage);
+		userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage, GUEST_ID);
 	}
 
 	@Test
@@ -49,6 +50,27 @@ public class UserInStorageUserPickerTest {
 		assertEquals(userStorage.lastCalledId, GUEST_ID);
 		assertNull(user.firstName);
 		assertNull(user.lastName);
+	}
+
+	@Test
+	public void testGetUserStorage() throws Exception {
+		assertEquals(userPicker.getUserStorage(), userStorage);
+	}
+
+	@Test
+	public void testGetCurrentUserId() throws Exception {
+		assertEquals(userPicker.getCurrentGuestUserId(), GUEST_ID);
+	}
+
+	@Test
+	public void testGuestUserWithDifferentUserId() throws Exception {
+		String guestUserId = "someGuestUserId";
+		UserPicker userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage,
+				guestUserId);
+		assertNotNull(userPicker);
+		user = userPicker.pickGuest();
+		assertTrue(userStorage.getUserByIdIsCalled);
+		assertEquals(userStorage.lastCalledId, "someGuestUserId");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -25,21 +25,25 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class UserInStorageUserPicker implements UserPicker {
 
+	private static final String DEFAULT_GUEST_USERID = "12345";
 	private UserStorage userStorage;
 	private DataGroup dataGroupUser;
 	private User user;
+	private String guestUserId = DEFAULT_GUEST_USERID;
 
-	private UserInStorageUserPicker(UserStorage userStorage) {
+	private UserInStorageUserPicker(UserStorage userStorage, String guestUserId) {
 		this.userStorage = userStorage;
+		this.guestUserId = guestUserId;
 	}
 
-	public static UserInStorageUserPicker usingUserStorage(UserStorage userStorage) {
-		return new UserInStorageUserPicker(userStorage);
+	public static UserInStorageUserPicker usingUserStorageAndGuestUserId(UserStorage userStorage,
+			String guestUserId) {
+		return new UserInStorageUserPicker(userStorage, guestUserId);
 	}
 
 	@Override
 	public User pickGuest() {
-		dataGroupUser = userStorage.getUserById("12345");
+		dataGroupUser = userStorage.getUserById(guestUserId);
 		return convertDataGroupToUser();
 	}
 
@@ -130,4 +134,13 @@ public final class UserInStorageUserPicker implements UserPicker {
 		String roleId = extractedRoleLink.getFirstAtomicValueWithNameInData("linkedRecordId");
 		user.roles.add(roleId);
 	}
+
+	public UserStorage getUserStorage() {
+		return userStorage;
+	}
+
+	public String getCurrentGuestUserId() {
+		return guestUserId;
+	}
+
 }
