@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,6 +20,7 @@
 package se.uu.ub.cora.userpicker;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
@@ -43,7 +44,9 @@ public class UserInStorageUserPickerTest {
 	@Test
 	public void testGuest() {
 		user = userPicker.pickGuest();
-		assertTrue(userStorage.getGuestUserIsCalled);
+		assertFalse(userStorage.getGuestUserIsCalled);
+		assertTrue(userStorage.getUserByIdIsCalled);
+		assertEquals(userStorage.lastCalledId, GUEST_ID);
 		assertNull(user.firstName);
 		assertNull(user.lastName);
 	}

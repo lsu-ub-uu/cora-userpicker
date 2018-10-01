@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,20 +23,12 @@ import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public class UserStorageSpy implements UserStorage {
+	private static final String GUEST_ID = "12345";
 	public boolean getGuestUserIsCalled = false;
 	public boolean getUserByIdIsCalled = false;
 	boolean guestIsActive = true;
-	public boolean getUserByIdFromLoginIsCalled = false;;
-
-	@Override
-	public DataGroup getGuestUser() {
-		getGuestUserIsCalled = true;
-		if (guestIsActive) {
-			return createUserWithRecordIdAndRoleNames("12345", true, "guest");
-		}
-		return createUserWithRecordIdAndRoleNames("12345", false, "guest");
-
-	}
+	public boolean getUserByIdFromLoginIsCalled = false;
+	public String lastCalledId;;
 
 	public void setGuestToInactive() {
 		guestIsActive = false;
@@ -74,13 +66,15 @@ public class UserStorageSpy implements UserStorage {
 
 	private static DataGroup createPermissionRoleWithPermissionRoleId(String roleName) {
 		DataGroup userRoleLink = DataGroup.withNameInData("userRole");
-		userRoleLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "permissionRole"));
+		userRoleLink
+				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "permissionRole"));
 		userRoleLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", roleName));
 		return userRoleLink;
 	}
 
 	@Override
 	public DataGroup getUserById(String id) {
+		this.lastCalledId = id;
 		getUserByIdIsCalled = true;
 		if ("unknownUser".equals(id)) {
 			throw new RuntimeException("user not found");
@@ -94,6 +88,12 @@ public class UserStorageSpy implements UserStorage {
 			userGroup.addChild(DataAtomic.withNameInDataAndValue("userFirstname", "firstName"));
 			userGroup.addChild(DataAtomic.withNameInDataAndValue("userLastname", "lastName"));
 			return userGroup;
+		}
+		if (GUEST_ID.equals(id)) {
+			if (guestIsActive) {
+				return createUserWithRecordIdAndRoleNames(GUEST_ID, true, "guest");
+			}
+			return createUserWithRecordIdAndRoleNames(GUEST_ID, false, "guest");
 		}
 		return createUserWithRecordIdAndRoleNames("121212", true, "fitnesse", "metadataAdmin");
 	}

@@ -39,7 +39,7 @@ public final class UserInStorageUserPicker implements UserPicker {
 
 	@Override
 	public User pickGuest() {
-		dataGroupUser = userStorage.getGuestUser();
+		dataGroupUser = userStorage.getUserById("12345");
 		return convertDataGroupToUser();
 	}
 
@@ -76,10 +76,12 @@ public final class UserInStorageUserPicker implements UserPicker {
 				pickedUser.loginId = userInfo.idFromLogin;
 			}
 			if (dataGroupUser.containsChildWithNameInData("userFirstname")) {
-				pickedUser.firstName = dataGroupUser.getFirstAtomicValueWithNameInData("userFirstname");
+				pickedUser.firstName = dataGroupUser
+						.getFirstAtomicValueWithNameInData("userFirstname");
 			}
 			if (dataGroupUser.containsChildWithNameInData("userLastname")) {
-				pickedUser.lastName = dataGroupUser.getFirstAtomicValueWithNameInData("userLastname");
+				pickedUser.lastName = dataGroupUser
+						.getFirstAtomicValueWithNameInData("userLastname");
 			}
 			return pickedUser;
 		}
@@ -116,7 +118,8 @@ public final class UserInStorageUserPicker implements UserPicker {
 	}
 
 	private void addUserRoleIdsToUserRoles() {
-		List<DataGroup> allGroupsWithNameInData = dataGroupUser.getAllGroupsWithNameInData("userRole");
+		List<DataGroup> allGroupsWithNameInData = dataGroupUser
+				.getAllGroupsWithNameInData("userRole");
 		for (DataGroup extractedRole : allGroupsWithNameInData) {
 			addUserRoleIdToUserRoles(extractedRole);
 		}
