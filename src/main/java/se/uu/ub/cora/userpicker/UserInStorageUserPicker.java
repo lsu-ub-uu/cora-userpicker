@@ -25,11 +25,10 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 
 public final class UserInStorageUserPicker implements UserPicker {
 
-	private static final String DEFAULT_GUEST_USERID = "12345";
 	private UserStorage userStorage;
 	private DataGroup dataGroupUser;
 	private User user;
-	private String guestUserId = DEFAULT_GUEST_USERID;
+	private String guestUserId;
 
 	private UserInStorageUserPicker(UserStorage userStorage, String guestUserId) {
 		this.userStorage = userStorage;
