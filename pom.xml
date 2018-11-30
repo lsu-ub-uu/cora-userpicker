@@ -15,17 +15,17 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.8-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>userpicker</artifactId>
-	<version>0.4-SNAPSHOT</version>
+	<version>0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>userpicker</name>
 
 	<properties>
-		<bookkeeper.version>0.12-SNAPSHOT</bookkeeper.version>
+		<bookkeeper.version>0.13-SNAPSHOT</bookkeeper.version>
 	</properties>
 
 	<scm>
