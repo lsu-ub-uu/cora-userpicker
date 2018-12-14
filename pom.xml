@@ -24,7 +24,7 @@
 	<name>userpicker</name>
 
 	<properties>
-		<bookkeeper.version>0.13.0</bookkeeper.version>
+		<bookkeeper.version>0.14.0</bookkeeper.version>
 	</properties>
 
 	<scm>
