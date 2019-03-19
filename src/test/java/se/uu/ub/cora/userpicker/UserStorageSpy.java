@@ -21,6 +21,7 @@ package se.uu.ub.cora.userpicker;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.gatekeeper.user.UserStorage;
 
 public class UserStorageSpy implements UserStorage {
 	private static final String GUEST_ID = "12345";

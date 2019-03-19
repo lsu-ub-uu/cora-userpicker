@@ -22,6 +22,10 @@ package se.uu.ub.cora.userpicker;
 import java.util.List;
 
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.gatekeeper.user.User;
+import se.uu.ub.cora.gatekeeper.user.UserInfo;
+import se.uu.ub.cora.gatekeeper.user.UserPicker;
+import se.uu.ub.cora.gatekeeper.user.UserStorage;
 
 public final class UserInStorageUserPicker implements UserPicker {
 
