@@ -53,7 +53,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<finalName>userpicker</finalName>
-	</build>
 </project>
