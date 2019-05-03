@@ -41,6 +41,11 @@ public class UserInStorageUserPickerProviderTest {
 	}
 
 	@Test
+	public void testPreferenceLevel() throws Exception {
+		assertEquals(userPickerProvider.getPreferenceLevel(), 0);
+	}
+
+	@Test
 	public void testDefaultNoArgsConstructorAsUsedByServiceLoaderExists() throws Exception {
 		assertTrue(userPickerProvider instanceof UserPickerProvider);
 	}

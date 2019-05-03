@@ -38,4 +38,9 @@ public class UserInStorageUserPickerProvider implements UserPickerProvider {
 		this.guestUserId = guestUserId;
 	}
 
+	@Override
+	public int getPreferenceLevel() {
+		return 0;
+	}
+
 }
