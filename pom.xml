@@ -24,7 +24,7 @@
 	<name>userpicker</name>
 
 	<properties>
-		<gatekeeper.version>1.1-SNAPSHOT</gatekeeper.version>
+		<gatekeeper.version>1.1.0</gatekeeper.version>
 	</properties>
 
 	<scm>
