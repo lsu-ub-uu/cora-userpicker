@@ -39,7 +39,7 @@ public class UserInStorageUserPickerProvider implements UserPickerProvider {
 	}
 
 	@Override
-	public int getPreferenceLevel() {
+	public int getOrderToSelectImplementionsBy() {
 		return 0;
 	}
 
