@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.userpicker;
 
-import se.uu.ub.cora.bookkeeper.data.DataAtomic;
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.gatekeeper.user.UserStorage;
 
 public class UserStorageSpy implements UserStorage {
