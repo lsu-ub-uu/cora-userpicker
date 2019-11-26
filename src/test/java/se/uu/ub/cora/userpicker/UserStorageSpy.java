@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.userpicker;
 
-import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.gatekeeper.user.UserStorage;
 
@@ -38,38 +37,37 @@ public class UserStorageSpy implements UserStorage {
 	private static DataGroup createUserWithRecordIdAndRoleNames(String userRecordId,
 			boolean activeStatus, String... roleNames) {
 		DataGroup recordInfo = createRecordInfoWithRecordTypeAndRecordId("user", userRecordId);
-		DataGroup userDataGroup = DataGroup.withNameInData("user");
+		DataGroup userDataGroup = new DataGroupSpy("user");
 		userDataGroup.addChild(recordInfo);
 		addRoleNamesAsRoles(userDataGroup, roleNames);
 		if (activeStatus) {
-			userDataGroup.addChild(DataAtomic.withNameInDataAndValue("activeStatus", "active"));
+			userDataGroup.addChild(new DataAtomicSpy("activeStatus", "active"));
 		} else {
-			userDataGroup.addChild(DataAtomic.withNameInDataAndValue("activeStatus", "inactive"));
+			userDataGroup.addChild(new DataAtomicSpy("activeStatus", "inactive"));
 		}
 		return userDataGroup;
 	}
 
 	public static DataGroup createRecordInfoWithRecordTypeAndRecordId(String recordType,
 			String recordId) {
-		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
-		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", recordId));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("type", recordType));
+		recordInfo.addChild(new DataAtomicSpy("id", recordId));
 		return recordInfo;
 	}
 
 	private static void addRoleNamesAsRoles(DataGroup user, String... roleNames) {
 		for (String roleName : roleNames) {
-			DataGroup userRole = DataGroup.withNameInData("userRole");
+			DataGroup userRole = new DataGroupSpy("userRole");
 			user.addChild(userRole);
 			userRole.addChild(createPermissionRoleWithPermissionRoleId(roleName));
 		}
 	}
 
 	private static DataGroup createPermissionRoleWithPermissionRoleId(String roleName) {
-		DataGroup userRoleLink = DataGroup.withNameInData("userRole");
-		userRoleLink
-				.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "permissionRole"));
-		userRoleLink.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", roleName));
+		DataGroup userRoleLink = new DataGroupSpy("userRole");
+		userRoleLink.addChild(new DataAtomicSpy("linkedRecordType", "permissionRole"));
+		userRoleLink.addChild(new DataAtomicSpy("linkedRecordId", roleName));
 		return userRoleLink;
 	}
 
@@ -86,8 +84,8 @@ public class UserStorageSpy implements UserStorage {
 		if ("1111111".equals(id)) {
 			DataGroup userGroup = createUserWithRecordIdAndRoleNames("1111111", true, "namedUser",
 					"metadataAdmin");
-			userGroup.addChild(DataAtomic.withNameInDataAndValue("userFirstname", "firstName"));
-			userGroup.addChild(DataAtomic.withNameInDataAndValue("userLastname", "lastName"));
+			userGroup.addChild(new DataAtomicSpy("userFirstname", "firstName"));
+			userGroup.addChild(new DataAtomicSpy("userLastname", "lastName"));
 			return userGroup;
 		}
 		if (GUEST_ID.equals(id)) {
