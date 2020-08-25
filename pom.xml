@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>1.0.2</version>
+		<version>1.1.1</version>
 	</parent>
 
 	<artifactId>userpicker</artifactId>
@@ -24,7 +24,7 @@
 	<name>userpicker</name>
 
 	<properties>
-		<gatekeeper.version>3.2.0</gatekeeper.version>
+		<gatekeeper.version>3.4.0</gatekeeper.version>
 	</properties>
 
 	<scm>
