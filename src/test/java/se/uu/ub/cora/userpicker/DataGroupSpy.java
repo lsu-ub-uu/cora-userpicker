@@ -212,4 +212,10 @@ public class DataGroupSpy implements DataGroup {
 		return null;
 	}
 
+	@Override
+	public boolean hasAttributes() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
