@@ -24,8 +24,8 @@
 	<name>userpicker</name>
 
 	<properties>
-		<gatekeeper.version>3.12.0</gatekeeper.version>
-		<coradata.version>7.0-SNAPSHOT</coradata.version>
+		<gatekeeper.version>3.13.0</gatekeeper.version>
+		<coradata.version>7.0.0</coradata.version>
 		<json.version>3.3.0</json.version>
 	</properties>
 
