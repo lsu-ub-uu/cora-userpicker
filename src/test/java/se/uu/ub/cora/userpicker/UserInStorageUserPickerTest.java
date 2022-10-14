@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2018 Uppsala University Library
+ * Copyright 2016, 2018, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,148 +20,88 @@
 package se.uu.ub.cora.userpicker;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+
+import java.util.List;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.gatekeeper.user.User;
 import se.uu.ub.cora.gatekeeper.user.UserInfo;
-import se.uu.ub.cora.gatekeeper.user.UserPicker;
+import se.uu.ub.cora.gatekeeper.user.UserStorageViewException;
 
 public class UserInStorageUserPickerTest {
-	private static final String FITNESSE_USER_ID = "121212";
 	private static final String GUEST_ID = "12345";
 	private UserInStorageUserPicker userPicker;
 	private User user;
 
-	private UserStorageSpy userStorage;
+	private UserStorageViewSpy userStorageView;
 
 	@BeforeMethod
 	public void setUp() {
-		userStorage = new UserStorageSpy();
-		userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage, GUEST_ID);
+		userStorageView = new UserStorageViewSpy();
+		userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorageView,
+				GUEST_ID);
 	}
 
 	@Test
 	public void testGuest() {
 		user = userPicker.pickGuest();
-		assertFalse(userStorage.getGuestUserIsCalled);
-		assertTrue(userStorage.getUserByIdIsCalled);
-		assertEquals(userStorage.lastCalledId, GUEST_ID);
-		assertNull(user.firstName);
-		assertNull(user.lastName);
+
+		userStorageView.MCR.assertParameters("getUserById", 0, GUEST_ID);
+		userStorageView.MCR.assertReturn("getUserById", 0, user);
 	}
 
 	@Test
 	public void testGetUserStorage() throws Exception {
-		assertEquals(userPicker.getUserStorage(), userStorage);
+		assertEquals(userPicker.onlyForTestGetUserStorage(), userStorageView);
 	}
 
 	@Test
 	public void testGetCurrentUserId() throws Exception {
-		assertEquals(userPicker.getCurrentGuestUserId(), GUEST_ID);
+		assertEquals(userPicker.onlyForTestGetCurrentGuestUserId(), GUEST_ID);
 	}
 
 	@Test
-	public void testGuestUserWithDifferentUserId() throws Exception {
-		String guestUserId = "someGuestUserId";
-		UserPicker userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage,
-				guestUserId);
-		assertNotNull(userPicker);
-		user = userPicker.pickGuest();
-		assertTrue(userStorage.getUserByIdIsCalled);
-		assertEquals(userStorage.lastCalledId, "someGuestUserId");
-	}
+	public void testPickUser() {
+		user = pickUserUsingIdInStorage("aUserId");
 
-	@Test
-	public void testGuestInactive() {
-		userStorage.setGuestToInactive();
-		user = userPicker.pickGuest();
-		assertNumberOfRoles(0);
+		assertEquals(user.loginId, "aUserId");
+		userStorageView.MCR.assertParameters("getUserById", 0, "aUserId");
+		userStorageView.MCR.assertReturn("getUserById", 0, user);
+		userStorageView.MCR.assertNumberOfCallsToMethod("getUserById", 1);
 	}
 
 	@Test
 	public void testUnknownUserIsGuest() {
+		userStorageView.MRV.setThrowException("getUserById",
+				UserStorageViewException.usingMessage("error from spy"), "unknownUser");
+
 		user = pickUserUsingIdInStorage("unknownUser");
-		assertUserId(GUEST_ID);
-		assertOnlyOneUserRole("guest");
+
+		userStorageView.MCR.assertParameters("getUserById", 0, "unknownUser");
+		userStorageView.MCR.assertParameters("getUserById", 1, GUEST_ID);
+		userStorageView.MCR.assertReturn("getUserById", 0, user);
 	}
 
 	private User pickUserUsingIdInStorage(String idInStorage) {
 		UserInfo userInfo = UserInfo.withIdInUserStorage(idInStorage);
-		User user = userPicker.pickUser(userInfo);
-		return user;
-	}
-
-	private void assertUserId(String expectedUserId) {
-		assertEquals(user.id, expectedUserId);
-	}
-
-	private void assertOnlyOneUserRole(String expectedRole) {
-		assertFirstUserRole(expectedRole);
-		assertOnlyOneUserRole();
-	}
-
-	private void assertFirstUserRole(String expectedFirstRole) {
-		String firstRole = user.roles.iterator().next();
-		assertEquals(firstRole, expectedFirstRole);
-	}
-
-	private void assertOnlyOneUserRole() {
-		assertEquals(user.roles.size(), 1);
-	}
-
-	@Test
-	public void testUserWithTwoRoles() {
-		user = pickUserUsingIdInStorage(FITNESSE_USER_ID);
-		assertUserId(FITNESSE_USER_ID);
-		assertNumberOfRoles(2);
-		assertUserRoles("fitnesse", "metadataAdmin");
-	}
-
-	private void assertNumberOfRoles(int numberOfRoles) {
-		assertEquals(user.roles.size(), numberOfRoles);
-	}
-
-	private void assertUserRoles(String... userRoles) {
-		int i = 0;
-		for (String userRole : user.roles) {
-			assertEquals(userRole, userRoles[i]);
-			i++;
-		}
+		return userPicker.pickUser(userInfo);
 	}
 
 	@Test
 	public void testInactiveUserReturnsGuest() {
-		user = pickUserUsingIdInStorage("666666");
-		assertUserId(GUEST_ID);
-	}
+		User userToReturnFromStorage = new User("someUserId");
+		userToReturnFromStorage.active = false;
 
-	@Test
-	public void testUserName() {
-		user = pickUserUsingIdInStorage("1111111");
-		assertUserId("1111111");
-		assertEquals(user.loginId, "1111111");
-		assertEquals(user.firstName, "firstName");
-		assertEquals(user.lastName, "lastName");
-	}
+		userStorageView.MRV.setReturnValues("getUserById", List.of(userToReturnFromStorage),
+				"anyUserId");
 
-	@Test
-	public void testUserNameMissing() {
-		user = pickUserUsingIdInStorage("12341234");
-		assertEquals(user.firstName, null);
-		assertEquals(user.lastName, null);
-	}
+		user = pickUserUsingIdInStorage("anyUserId");
 
-	@Test
-	public void testUnknownUserFromLoginIsGuest() {
-		user = pickUserUsingIdFromLogin("unknown@ub.uu.se");
-		assertUserId(GUEST_ID);
-		assertOnlyOneUserRole("guest");
+		userStorageView.MCR.assertParameters("getUserById", 0, "anyUserId");
+		userStorageView.MCR.assertParameters("getUserById", 1, GUEST_ID);
+		userStorageView.MCR.assertReturn("getUserById", 1, user);
 	}
 
 	private User pickUserUsingIdFromLogin(String idFromLogin) {
@@ -171,18 +111,46 @@ public class UserInStorageUserPickerTest {
 	}
 
 	@Test
-	public void testUserFromLoginWithTwoRoles() {
+	public void testPickUser_idFromLogin() {
 		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+
 		assertEquals(user.loginId, "fitnesse@ub.uu.se");
-		assertUserId(FITNESSE_USER_ID);
-		assertNumberOfRoles(2);
-		assertUserRoles("fitnesse", "metadataAdmin");
+		userStorageView.MCR.assertParameters("getUserByIdFromLogin", 0, "fitnesse@ub.uu.se");
+		userStorageView.MCR.assertReturn("getUserByIdFromLogin", 0, user);
+		userStorageView.MCR.assertNumberOfCallsToMethod("getUserByIdFromLogin", 1);
 	}
 
 	@Test
-	public void testInactiveUserFromLoginReturnsGuest() {
-		user = pickUserUsingIdFromLogin("other@ub.uu.se");
-		assertUserId(GUEST_ID);
-		assertOnlyOneUserRole("guest");
+	public void testUnknownUserIsGuest_idFromLogin() {
+		userStorageView.MRV.setThrowException("getUserByIdFromLogin",
+				UserStorageViewException.usingMessage("error from spy"), "fitnesse@ub.uu.se");
+
+		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+
+		userStorageView.MCR.assertParameters("getUserByIdFromLogin", 0, "fitnesse@ub.uu.se");
+		userStorageView.MCR.assertParameters("getUserById", 0, GUEST_ID);
+		userStorageView.MCR.assertReturn("getUserById", 0, user);
 	}
+
+	@Test
+	public void testInactiveUserReturnsGuest_idFromLogin() {
+		User userToReturnFromStorage = new User("someUserId");
+		userToReturnFromStorage.active = false;
+
+		userStorageView.MRV.setReturnValues("getUserByIdFromLogin",
+				List.of(userToReturnFromStorage), "fitnesse@ub.uu.se");
+
+		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+
+		userStorageView.MCR.assertParameters("getUserByIdFromLogin", 0, "fitnesse@ub.uu.se");
+		userStorageView.MCR.assertParameters("getUserById", 0, GUEST_ID);
+		userStorageView.MCR.assertReturn("getUserById", 0, user);
+	}
+
+	// @Test
+	// public void testInactiveUserFromLoginReturnsGuest() {
+	// user = pickUserUsingIdFromLogin("other@ub.uu.se");
+	// assertUserId(GUEST_ID);
+	// assertOnlyOneUserRole("guest");
+	// }
 }

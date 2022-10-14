@@ -30,13 +30,13 @@ import se.uu.ub.cora.gatekeeper.user.UserPickerProvider;
 
 public class UserInStorageUserPickerProviderTest {
 	private UserInStorageUserPickerProvider userPickerProvider;
-	private UserStorageSpy userStorageSpy;
+	private UserStorageViewSpy userStorageSpy;
 	private String guestUserId = "someGuestUserId";
 
 	@BeforeMethod
 	public void beforeMethod() {
 		userPickerProvider = new UserInStorageUserPickerProvider();
-		userStorageSpy = new UserStorageSpy();
+		userStorageSpy = new UserStorageViewSpy();
 		userPickerProvider.startUsingUserStorageAndGuestUserId(userStorageSpy, guestUserId);
 	}
 
@@ -55,8 +55,8 @@ public class UserInStorageUserPickerProviderTest {
 		UserInStorageUserPicker userPicker = (UserInStorageUserPicker) userPickerProvider
 				.getUserPicker();
 		assertTrue(userPicker instanceof UserInStorageUserPicker);
-		assertEquals(userPicker.getCurrentGuestUserId(), guestUserId);
-		assertEquals(userPicker.getUserStorage(), userStorageSpy);
+		assertEquals(userPicker.onlyForTestGetCurrentGuestUserId(), guestUserId);
+		assertEquals(userPicker.onlyForTestGetUserStorage(), userStorageSpy);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class UserInStorageUserPickerProviderTest {
 				.getUserPicker();
 		UserInStorageUserPicker userPicker2 = (UserInStorageUserPicker) userPickerProvider
 				.getUserPicker();
-		assertSame(userPicker.getUserStorage(), userPicker2.getUserStorage());
-		assertSame(userPicker.getCurrentGuestUserId(), userPicker2.getCurrentGuestUserId());
+		assertSame(userPicker.onlyForTestGetUserStorage(), userPicker2.onlyForTestGetUserStorage());
+		assertSame(userPicker.onlyForTestGetCurrentGuestUserId(), userPicker2.onlyForTestGetCurrentGuestUserId());
 	}
 }

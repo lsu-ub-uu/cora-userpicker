@@ -24,8 +24,11 @@
 	<name>userpicker</name>
 
 	<properties>
-		<gatekeeper.version>3.14.0</gatekeeper.version>
-		<coradata.version>7.1.0</coradata.version>
+		<testutils.version>1.6-SNAPSHOT</testutils.version>
+		<gatekeeper.version>4.0-SNAPSHOT</gatekeeper.version>
+		<coradata.version>7.2-SNAPSHOT</coradata.version>
+		<initialize.version>1.0-SNAPSHOT</initialize.version>
+		<logger.version>2.5.0</logger.version>
 		<json.version>3.3.0</json.version>
 	</properties>
 
@@ -37,6 +40,12 @@
   </scm>
 
 	<dependencies>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>testutils</artifactId>
+			<version>${testutils.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>gatekeeper</artifactId>
@@ -53,6 +62,18 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>initialize</artifactId>
+			<version>${initialize.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>logger</artifactId>
+			<version>${logger.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

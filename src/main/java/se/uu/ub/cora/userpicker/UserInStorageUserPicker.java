@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2018 Uppsala University Library
+ * Copyright 2016, 2018, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,41 +19,28 @@
 
 package se.uu.ub.cora.userpicker;
 
-import java.util.List;
-
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.gatekeeper.user.User;
 import se.uu.ub.cora.gatekeeper.user.UserInfo;
 import se.uu.ub.cora.gatekeeper.user.UserPicker;
-import se.uu.ub.cora.gatekeeper.user.UserStorage;
+import se.uu.ub.cora.gatekeeper.user.UserStorageView;
 
 public final class UserInStorageUserPicker implements UserPicker {
-
-	private UserStorage userStorage;
-	private DataGroup dataGroupUser;
-	private User user;
+	private UserStorageView userStorage;
 	private String guestUserId;
 
-	private UserInStorageUserPicker(UserStorage userStorage, String guestUserId) {
+	private UserInStorageUserPicker(UserStorageView userStorage, String guestUserId) {
 		this.userStorage = userStorage;
 		this.guestUserId = guestUserId;
 	}
 
-	public static UserInStorageUserPicker usingUserStorageAndGuestUserId(UserStorage userStorage,
-			String guestUserId) {
+	public static UserInStorageUserPicker usingUserStorageAndGuestUserId(
+			UserStorageView userStorage, String guestUserId) {
 		return new UserInStorageUserPicker(userStorage, guestUserId);
 	}
 
 	@Override
 	public User pickGuest() {
-		dataGroupUser = userStorage.getUserById(guestUserId);
-		return convertDataGroupToUser();
-	}
-
-	private User convertDataGroupToUser() {
-		createNewUserWithUserId();
-		possiblyAddUserRoles();
-		return user;
+		return userStorage.getUserById(guestUserId);
 	}
 
 	@Override
@@ -70,79 +57,37 @@ public final class UserInStorageUserPicker implements UserPicker {
 	}
 
 	private User tryToGetActiveUserOrGuest(UserInfo userInfo) {
-		if (null != userInfo.idInUserStorage) {
-			tryToGetUserByStorageId(userInfo);
-		} else {
-			tryToGetUserByIdFromLogin(userInfo);
-		}
-		if (userIsActive()) {
-			User pickedUser = convertDataGroupToUser();
-			if (null != userInfo.idInUserStorage) {
-				pickedUser.loginId = userInfo.idInUserStorage;
-			} else {
-				pickedUser.loginId = userInfo.idFromLogin;
-			}
-			if (dataGroupUser.containsChildWithNameInData("userFirstname")) {
-				pickedUser.firstName = dataGroupUser
-						.getFirstAtomicValueWithNameInData("userFirstname");
-			}
-			if (dataGroupUser.containsChildWithNameInData("userLastname")) {
-				pickedUser.lastName = dataGroupUser
-						.getFirstAtomicValueWithNameInData("userLastname");
-			}
-			return pickedUser;
+		User userFromStorage = getUserFromStorage(userInfo);
+		if (userFromStorage.active) {
+			return userFromStorage;
 		}
 		return pickGuest();
 	}
 
-	private void tryToGetUserByStorageId(UserInfo userInfo) {
-		dataGroupUser = userStorage.getUserById(userInfo.idInUserStorage);
-	}
-
-	private void tryToGetUserByIdFromLogin(UserInfo userInfo) {
-		dataGroupUser = userStorage.getUserByIdFromLogin(userInfo.idFromLogin);
-	}
-
-	private void createNewUserWithUserId() {
-		String id = extractUserIdFromUserFromStorage();
-		user = new User(id);
-	}
-
-	private String extractUserIdFromUserFromStorage() {
-		DataGroup recordInfo = dataGroupUser.getFirstGroupWithNameInData("recordInfo");
-		return recordInfo.getFirstAtomicValueWithNameInData("id");
-	}
-
-	private void possiblyAddUserRoles() {
-		if (userIsActive()) {
-			addUserRoleIdsToUserRoles();
+	private User getUserFromStorage(UserInfo userInfo) {
+		if (null != userInfo.idInUserStorage) {
+			return getUserFromStorageBasedOnId(userInfo);
 		}
+		return getUserFromStorageBasedOnLoginId(userInfo);
 	}
 
-	private boolean userIsActive() {
-		String activeStatus = dataGroupUser.getFirstAtomicValueWithNameInData("activeStatus");
-		return "active".equals(activeStatus);
+	private User getUserFromStorageBasedOnId(UserInfo userInfo) {
+		User userFromStorage = userStorage.getUserById(userInfo.idInUserStorage);
+		userFromStorage.loginId = userInfo.idInUserStorage;
+		return userFromStorage;
 	}
 
-	private void addUserRoleIdsToUserRoles() {
-		List<DataGroup> allGroupsWithNameInData = dataGroupUser
-				.getAllGroupsWithNameInData("userRole");
-		for (DataGroup extractedRole : allGroupsWithNameInData) {
-			addUserRoleIdToUserRoles(extractedRole);
-		}
+	private User getUserFromStorageBasedOnLoginId(UserInfo userInfo) {
+		User userFromStorage = userStorage.getUserByIdFromLogin(userInfo.idFromLogin);
+		userFromStorage.loginId = userInfo.idFromLogin;
+		return userFromStorage;
 	}
 
-	private void addUserRoleIdToUserRoles(DataGroup extractedRole) {
-		DataGroup extractedRoleLink = extractedRole.getFirstGroupWithNameInData("userRole");
-		String roleId = extractedRoleLink.getFirstAtomicValueWithNameInData("linkedRecordId");
-		user.roles.add(roleId);
-	}
-
-	public UserStorage getUserStorage() {
+	public UserStorageView onlyForTestGetUserStorage() {
 		return userStorage;
 	}
 
-	public String getCurrentGuestUserId() {
+	public String onlyForTestGetCurrentGuestUserId() {
 		return guestUserId;
 	}
 

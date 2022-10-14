@@ -20,11 +20,11 @@ package se.uu.ub.cora.userpicker;
 
 import se.uu.ub.cora.gatekeeper.user.UserPicker;
 import se.uu.ub.cora.gatekeeper.user.UserPickerProvider;
-import se.uu.ub.cora.gatekeeper.user.UserStorage;
+import se.uu.ub.cora.gatekeeper.user.UserStorageView;
 
 public class UserInStorageUserPickerProvider implements UserPickerProvider {
 
-	private UserStorage userStorage;
+	private UserStorageView userStorage;
 	private String guestUserId;
 
 	@Override
@@ -33,7 +33,8 @@ public class UserInStorageUserPickerProvider implements UserPickerProvider {
 	}
 
 	@Override
-	public void startUsingUserStorageAndGuestUserId(UserStorage userStorage, String guestUserId) {
+	public void startUsingUserStorageAndGuestUserId(UserStorageView userStorage,
+			String guestUserId) {
 		this.userStorage = userStorage;
 		this.guestUserId = guestUserId;
 	}
