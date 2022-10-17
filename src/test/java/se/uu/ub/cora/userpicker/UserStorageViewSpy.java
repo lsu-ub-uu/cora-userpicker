@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, 2018, 2022 Uppsala University Library
+ * Copyright 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,14 +16,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.userpicker;
 
 import java.util.function.Supplier;
 
+import se.uu.ub.cora.gatekeeper.storage.UserStorageView;
 import se.uu.ub.cora.gatekeeper.user.AppToken;
 import se.uu.ub.cora.gatekeeper.user.User;
-import se.uu.ub.cora.gatekeeper.user.UserStorageView;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
@@ -71,83 +70,5 @@ public class UserStorageViewSpy implements UserStorageView {
 	public AppToken getAppTokenById(String tokenId) {
 		return (AppToken) MCR.addCallAndReturnFromMRV("tokenId", tokenId);
 	}
-	// public void setGuestToInactive() {
-	// guestIsActive = false;
-	// }
-	//
-	// private static DataGroup createUserWithRecordIdAndRoleNames(String userRecordId,
-	// boolean activeStatus, String... roleNames) {
-	// DataGroup recordInfo = createRecordInfoWithRecordTypeAndRecordId("user", userRecordId);
-	// DataGroup userDataGroup = new DataGroupSpy("user");
-	// userDataGroup.addChild(recordInfo);
-	// addRoleNamesAsRoles(userDataGroup, roleNames);
-	// if (activeStatus) {
-	// userDataGroup.addChild(new DataAtomicSpy("activeStatus", "active"));
-	// } else {
-	// userDataGroup.addChild(new DataAtomicSpy("activeStatus", "inactive"));
-	// }
-	// return userDataGroup;
-	// }
-	//
-	// public static DataGroup createRecordInfoWithRecordTypeAndRecordId(String recordType,
-	// String recordId) {
-	// DataGroup recordInfo = new DataGroupSpy("recordInfo");
-	// recordInfo.addChild(new DataAtomicSpy("type", recordType));
-	// recordInfo.addChild(new DataAtomicSpy("id", recordId));
-	// return recordInfo;
-	// }
-	//
-	// private static void addRoleNamesAsRoles(DataGroup user, String... roleNames) {
-	// for (String roleName : roleNames) {
-	// DataGroup userRole = new DataGroupSpy("userRole");
-	// user.addChild(userRole);
-	// userRole.addChild(createPermissionRoleWithPermissionRoleId(roleName));
-	// }
-	// }
-	//
-	// private static DataGroup createPermissionRoleWithPermissionRoleId(String roleName) {
-	// DataGroup userRoleLink = new DataGroupSpy("userRole");
-	// userRoleLink.addChild(new DataAtomicSpy("linkedRecordType", "permissionRole"));
-	// userRoleLink.addChild(new DataAtomicSpy("linkedRecordId", roleName));
-	// return userRoleLink;
-	// }
-	//
-	// @Override
-	// public DataGroup getUserById(String id) {
-	// this.lastCalledId = id;
-	// getUserByIdIsCalled = true;
-	// if ("unknownUser".equals(id)) {
-	// throw new RuntimeException("user not found");
-	// }
-	// if ("666666".equals(id)) {
-	// return createUserWithRecordIdAndRoleNames("666666", false, "fitnesse", "metadataAdmin");
-	// }
-	// if ("1111111".equals(id)) {
-	// DataGroup userGroup = createUserWithRecordIdAndRoleNames("1111111", true, "namedUser",
-	// "metadataAdmin");
-	// userGroup.addChild(new DataAtomicSpy("userFirstname", "firstName"));
-	// userGroup.addChild(new DataAtomicSpy("userLastname", "lastName"));
-	// return userGroup;
-	// }
-	// if (GUEST_ID.equals(id)) {
-	// if (guestIsActive) {
-	// return createUserWithRecordIdAndRoleNames(GUEST_ID, true, "guest");
-	// }
-	// return createUserWithRecordIdAndRoleNames(GUEST_ID, false, "guest");
-	// }
-	// return createUserWithRecordIdAndRoleNames("121212", true, "fitnesse", "metadataAdmin");
-	// }
-	//
-	// @Override
-	// public DataGroup getUserByIdFromLogin(String idFromLogin) {
-	// getUserByIdFromLoginIsCalled = true;
-	// if ("unknown@ub.uu.se".equals(idFromLogin)) {
-	// throw new RuntimeException("user not found");
-	// }
-	// if ("fitnesse@ub.uu.se".equals(idFromLogin)) {
-	// return createUserWithRecordIdAndRoleNames("121212", true, "fitnesse", "metadataAdmin");
-	// }
-	// return createUserWithRecordIdAndRoleNames("141414", false, "fitnesse", "metadataAdmin");
-	// }
 
 }

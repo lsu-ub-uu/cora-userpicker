@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Olov McKie
+ * Copyright 2019, 2022 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -20,24 +20,37 @@ package se.uu.ub.cora.userpicker;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
-import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.gatekeeper.user.UserPickerProvider;
+import se.uu.ub.cora.gatekeeper.picker.UserPickerInstanceProvider;
+import se.uu.ub.cora.gatekeeper.storage.UserStorageProvider;
+import se.uu.ub.cora.gatekeeper.storage.UserStorageView;
+import se.uu.ub.cora.initialize.SettingsProvider;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
 public class UserInStorageUserPickerProviderTest {
 	private UserInStorageUserPickerProvider userPickerProvider;
-	private UserStorageViewSpy userStorageSpy;
 	private String guestUserId = "someGuestUserId";
+	private UserStorageViewInstanceProviderSpy userStorageInstanceProvider;
+	private MapSpy<String, String> settingsMapSpy;
 
 	@BeforeMethod
 	public void beforeMethod() {
+		LoggerFactorySpy loggerFactory = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactory);
+		userStorageInstanceProvider = new UserStorageViewInstanceProviderSpy();
+		UserStorageProvider
+				.onlyForTestSetUserStorageViewInstanceProvider(userStorageInstanceProvider);
+
+		settingsMapSpy = new MapSpy<>();
+		settingsMapSpy.put("guestUserId", guestUserId);
+		SettingsProvider.setSettings(settingsMapSpy);
+
 		userPickerProvider = new UserInStorageUserPickerProvider();
-		userStorageSpy = new UserStorageViewSpy();
-		userPickerProvider.startUsingUserStorageAndGuestUserId(userStorageSpy, guestUserId);
 	}
 
 	@Test
@@ -47,16 +60,20 @@ public class UserInStorageUserPickerProviderTest {
 
 	@Test
 	public void testDefaultNoArgsConstructorAsUsedByServiceLoaderExists() throws Exception {
-		assertTrue(userPickerProvider instanceof UserPickerProvider);
+		assertTrue(userPickerProvider instanceof UserPickerInstanceProvider);
 	}
 
 	@Test
 	public void testGetUserPicker() throws Exception {
 		UserInStorageUserPicker userPicker = (UserInStorageUserPicker) userPickerProvider
 				.getUserPicker();
+
 		assertTrue(userPicker instanceof UserInStorageUserPicker);
 		assertEquals(userPicker.onlyForTestGetCurrentGuestUserId(), guestUserId);
-		assertEquals(userPicker.onlyForTestGetUserStorage(), userStorageSpy);
+		UserStorageView userStorage = userPicker.onlyForTestGetUserStorage();
+
+		userStorageInstanceProvider.MCR.assertNumberOfCallsToMethod("getStorageView", 1);
+		userStorageInstanceProvider.MCR.assertReturn("getStorageView", 0, userStorage);
 	}
 
 	@Test
@@ -65,16 +82,17 @@ public class UserInStorageUserPickerProviderTest {
 				.getUserPicker();
 		UserInStorageUserPicker userPicker2 = (UserInStorageUserPicker) userPickerProvider
 				.getUserPicker();
-		assertNotEquals(userPicker, userPicker2);
-	}
 
-	@Test
-	public void testReturnedUserPickersUsesSameStorageAndGuestId() throws Exception {
-		UserInStorageUserPicker userPicker = (UserInStorageUserPicker) userPickerProvider
-				.getUserPicker();
-		UserInStorageUserPicker userPicker2 = (UserInStorageUserPicker) userPickerProvider
-				.getUserPicker();
-		assertSame(userPicker.onlyForTestGetUserStorage(), userPicker2.onlyForTestGetUserStorage());
-		assertSame(userPicker.onlyForTestGetCurrentGuestUserId(), userPicker2.onlyForTestGetCurrentGuestUserId());
+		assertNotEquals(userPicker, userPicker2);
+
+		userStorageInstanceProvider.MCR.assertNumberOfCallsToMethod("getStorageView", 2);
+
+		UserStorageView userStorage = userPicker.onlyForTestGetUserStorage();
+		userStorageInstanceProvider.MCR.assertReturn("getStorageView", 0, userStorage);
+
+		UserStorageView userStorage2 = userPicker2.onlyForTestGetUserStorage();
+		userStorageInstanceProvider.MCR.assertReturn("getStorageView", 1, userStorage2);
+
+		settingsMapSpy.MCR.assertNumberOfCallsToMethod("get", 1);
 	}
 }

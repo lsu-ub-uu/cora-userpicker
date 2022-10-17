@@ -19,10 +19,10 @@
 
 package se.uu.ub.cora.userpicker;
 
+import se.uu.ub.cora.gatekeeper.picker.UserInfo;
+import se.uu.ub.cora.gatekeeper.picker.UserPicker;
+import se.uu.ub.cora.gatekeeper.storage.UserStorageView;
 import se.uu.ub.cora.gatekeeper.user.User;
-import se.uu.ub.cora.gatekeeper.user.UserInfo;
-import se.uu.ub.cora.gatekeeper.user.UserPicker;
-import se.uu.ub.cora.gatekeeper.user.UserStorageView;
 
 public final class UserInStorageUserPicker implements UserPicker {
 	private UserStorageView userStorage;

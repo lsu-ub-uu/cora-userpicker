@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, 2022 Olov McKie
+ * Copyright 2022 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -18,24 +18,17 @@
  */
 package se.uu.ub.cora.userpicker;
 
-import se.uu.ub.cora.gatekeeper.picker.UserPicker;
-import se.uu.ub.cora.gatekeeper.picker.UserPickerInstanceProvider;
-import se.uu.ub.cora.gatekeeper.storage.UserStorageProvider;
-import se.uu.ub.cora.gatekeeper.storage.UserStorageView;
-import se.uu.ub.cora.initialize.SettingsProvider;
+import java.util.HashMap;
 
-public class UserInStorageUserPickerProvider implements UserPickerInstanceProvider {
-	String guestUserId = SettingsProvider.getSetting("guestUserId");
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+
+public class MapSpy<K, V> extends HashMap<K, V> {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public UserPicker getUserPicker() {
-		UserStorageView userStorage = UserStorageProvider.getStorageView();
-		return UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage, guestUserId);
-	}
-
-	@Override
-	public int getOrderToSelectImplementionsBy() {
-		return 0;
+	public V get(Object key) {
+		MCR.addCall("key", key);
+		return super.get(key);
 	}
 
 }

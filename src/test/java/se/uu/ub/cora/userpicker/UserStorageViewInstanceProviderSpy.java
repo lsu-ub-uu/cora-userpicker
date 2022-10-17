@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, 2022 Olov McKie
+ * Copyright 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,24 +18,28 @@
  */
 package se.uu.ub.cora.userpicker;
 
-import se.uu.ub.cora.gatekeeper.picker.UserPicker;
-import se.uu.ub.cora.gatekeeper.picker.UserPickerInstanceProvider;
-import se.uu.ub.cora.gatekeeper.storage.UserStorageProvider;
 import se.uu.ub.cora.gatekeeper.storage.UserStorageView;
-import se.uu.ub.cora.initialize.SettingsProvider;
+import se.uu.ub.cora.gatekeeper.storage.UserStorageViewInstanceProvider;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class UserInStorageUserPickerProvider implements UserPickerInstanceProvider {
-	String guestUserId = SettingsProvider.getSetting("guestUserId");
+public class UserStorageViewInstanceProviderSpy implements UserStorageViewInstanceProvider {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	@Override
-	public UserPicker getUserPicker() {
-		UserStorageView userStorage = UserStorageProvider.getStorageView();
-		return UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorage, guestUserId);
+	public UserStorageViewInstanceProviderSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getStorageView", UserStorageViewSpy::new);
 	}
 
 	@Override
 	public int getOrderToSelectImplementionsBy() {
 		return 0;
+	}
+
+	@Override
+	public UserStorageView getStorageView() {
+		return (UserStorageView) MCR.addCallAndReturnFromMRV();
 	}
 
 }

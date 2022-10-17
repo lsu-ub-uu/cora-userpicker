@@ -26,9 +26,9 @@ import java.util.List;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.gatekeeper.picker.UserInfo;
+import se.uu.ub.cora.gatekeeper.storage.UserStorageViewException;
 import se.uu.ub.cora.gatekeeper.user.User;
-import se.uu.ub.cora.gatekeeper.user.UserInfo;
-import se.uu.ub.cora.gatekeeper.user.UserStorageViewException;
 
 public class UserInStorageUserPickerTest {
 	private static final String GUEST_ID = "12345";
