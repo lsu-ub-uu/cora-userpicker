@@ -24,13 +24,13 @@
 	<name>userpicker</name>
 
 	<properties>
-		<testutils.version>1.6-SNAPSHOT</testutils.version>
-		<gatekeeper.version>4.0-SNAPSHOT</gatekeeper.version>
-		<coradata.version>7.2-SNAPSHOT</coradata.version>
-		<initialize.version>1.0-SNAPSHOT</initialize.version>
+		<testutils.version>1.6.0</testutils.version>
+		<gatekeeper.version>4.0.0</gatekeeper.version>
+		<coradata.version>7.2.0</coradata.version>
+		<initialize.version>1.0.0</initialize.version>
 		<logger.version>2.5.0</logger.version>
-		<loggerspies.version>1.0-SNAPSHOT</loggerspies.version>
-		<json.version>3.3.0</json.version>
+		<loggerspies.version>1.0.0</loggerspies.version>
+		<json.version>3.4.0</json.version>
 	</properties>
 
 	<scm>
