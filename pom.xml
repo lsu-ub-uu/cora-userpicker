@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>2.4.0</version>
+		<version>2.5.0</version>
 	</parent>
 
 	<artifactId>userpicker</artifactId>
@@ -24,13 +24,13 @@
 	<name>userpicker</name>
 
 	<properties>
-		<testutils.version>1.10.0</testutils.version>
-		<gatekeeper.version>4.4.0</gatekeeper.version>
-		<coradata.version>7.7.0</coradata.version>
-		<initialize.version>1.4.0</initialize.version>
-		<logger.version>2.9.0</logger.version>
-		<loggerspies.version>1.4.0</loggerspies.version>
-		<json.version>3.8.0</json.version>
+		<testutils.version>1.11.0</testutils.version>
+		<gatekeeper.version>4.5.0</gatekeeper.version>
+		<coradata.version>8.0.0</coradata.version>
+		<initialize.version>1.5.0</initialize.version>
+		<logger.version>2.10.0</logger.version>
+		<loggerspies.version>1.5.0</loggerspies.version>
+		<json.version>3.9.0</json.version>
 	</properties>
 
 	<scm>
