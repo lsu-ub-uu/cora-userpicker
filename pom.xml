@@ -25,12 +25,12 @@
 
 	<properties>
 		<testutils.version>1.11.0</testutils.version>
-		<gatekeeper.version>4.5.0</gatekeeper.version>
-		<coradata.version>8.0.0</coradata.version>
-		<initialize.version>1.5.0</initialize.version>
+		<gatekeeper.version>4.6.0</gatekeeper.version>
+		<coradata.version>9.0.0</coradata.version>
+		<initialize.version>1.6.0</initialize.version>
 		<logger.version>2.10.0</logger.version>
 		<loggerspies.version>1.5.0</loggerspies.version>
-		<json.version>3.9.0</json.version>
+		<json.version>3.10.0</json.version>
 	</properties>
 
 	<scm>
