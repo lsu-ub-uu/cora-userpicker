@@ -31,7 +31,7 @@ public class UserStorageViewSpy implements UserStorageView {
 	public boolean getGuestUserIsCalled = false;
 	public boolean getUserByIdIsCalled = false;
 	boolean guestIsActive = true;
-	public boolean getUserByIdFromLoginIsCalled = false;
+	public boolean getUserByLoginIsCalled = false;
 	public String lastCalledId;
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
@@ -40,8 +40,7 @@ public class UserStorageViewSpy implements UserStorageView {
 	public UserStorageViewSpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getUserById", (Supplier<User>) () -> createUser());
-		MRV.setDefaultReturnValuesSupplier("getUserByIdFromLogin",
-				(Supplier<User>) () -> createUser());
+		MRV.setDefaultReturnValuesSupplier("getUserByLoginId", (Supplier<User>) () -> createUser());
 		MRV.setDefaultReturnValuesSupplier("getAppTokenById",
 				(Supplier<AppToken>) () -> createApptoken());
 	}
@@ -62,13 +61,19 @@ public class UserStorageViewSpy implements UserStorageView {
 	}
 
 	@Override
-	public User getUserByIdFromLogin(String idFromLogin) {
-		return (User) MCR.addCallAndReturnFromMRV("idFromLogin", idFromLogin);
+	public User getUserByLoginId(String loginId) {
+		return (User) MCR.addCallAndReturnFromMRV("loginId", loginId);
 	}
 
 	@Override
 	public AppToken getAppTokenById(String tokenId) {
 		return (AppToken) MCR.addCallAndReturnFromMRV("tokenId", tokenId);
+	}
+
+	@Override
+	public String getSystemSecretById(String systemSecretId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

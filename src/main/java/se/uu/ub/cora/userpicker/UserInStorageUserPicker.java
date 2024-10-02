@@ -78,8 +78,8 @@ public final class UserInStorageUserPicker implements UserPicker {
 	}
 
 	private User getUserFromStorageBasedOnLoginId(UserInfo userInfo) {
-		User userFromStorage = userStorage.getUserByIdFromLogin(userInfo.idFromLogin);
-		userFromStorage.loginId = userInfo.idFromLogin;
+		User userFromStorage = userStorage.getUserByLoginId(userInfo.loginId);
+		userFromStorage.loginId = userInfo.loginId;
 		return userFromStorage;
 	}
 
