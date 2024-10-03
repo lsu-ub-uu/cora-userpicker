@@ -18,8 +18,6 @@
  */
 package se.uu.ub.cora.userpicker;
 
-import java.util.function.Supplier;
-
 import se.uu.ub.cora.gatekeeper.storage.UserStorageView;
 import se.uu.ub.cora.gatekeeper.user.AppToken;
 import se.uu.ub.cora.gatekeeper.user.User;
@@ -39,10 +37,9 @@ public class UserStorageViewSpy implements UserStorageView {
 
 	public UserStorageViewSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getUserById", (Supplier<User>) () -> createUser());
-		MRV.setDefaultReturnValuesSupplier("getUserByLoginId", (Supplier<User>) () -> createUser());
-		MRV.setDefaultReturnValuesSupplier("getAppTokenById",
-				(Supplier<AppToken>) () -> createApptoken());
+		MRV.setDefaultReturnValuesSupplier("getUserById", () -> createUser());
+		MRV.setDefaultReturnValuesSupplier("getUserByLoginId", () -> createUser());
+		MRV.setDefaultReturnValuesSupplier("getAppTokenById", () -> createApptoken());
 	}
 
 	private User createUser() {
