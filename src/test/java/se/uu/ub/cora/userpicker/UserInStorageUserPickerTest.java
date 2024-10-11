@@ -31,9 +31,10 @@ import se.uu.ub.cora.gatekeeper.storage.UserStorageViewException;
 import se.uu.ub.cora.gatekeeper.user.User;
 
 public class UserInStorageUserPickerTest {
+	private static final String USER_ID = "someUserId";
+	private static final String LOGIN_ID = "someLoginId";
 	private static final String GUEST_ID = "12345";
 	private UserInStorageUserPicker userPicker;
-	private User user;
 
 	private UserStorageViewSpy userStorageView;
 
@@ -42,11 +43,24 @@ public class UserInStorageUserPickerTest {
 		userStorageView = new UserStorageViewSpy();
 		userPicker = UserInStorageUserPicker.usingUserStorageAndGuestUserId(userStorageView,
 				GUEST_ID);
+
+		User userFromStorage = createActiveUserUsingUserIdAndLoginId(USER_ID, LOGIN_ID);
+
+		userStorageView.MRV.setDefaultReturnValuesSupplier("getUserById", () -> userFromStorage);
+		userStorageView.MRV.setDefaultReturnValuesSupplier("getUserByLoginId",
+				() -> userFromStorage);
+	}
+
+	private User createActiveUserUsingUserIdAndLoginId(String userId, String loginId) {
+		User userFromStorage = new User(userId);
+		userFromStorage.loginId = loginId;
+		userFromStorage.active = true;
+		return userFromStorage;
 	}
 
 	@Test
 	public void testGuest() {
-		user = userPicker.pickGuest();
+		User user = userPicker.pickGuest();
 
 		userStorageView.MCR.assertParameters("getUserById", 0, GUEST_ID);
 		userStorageView.MCR.assertReturn("getUserById", 0, user);
@@ -64,9 +78,9 @@ public class UserInStorageUserPickerTest {
 
 	@Test
 	public void testPickUser() {
-		user = pickUserUsingIdInStorage("aUserId");
+		User user = pickUserUsingIdInStorage("aUserId");
 
-		assertEquals(user.loginId, "aUserId");
+		assertEquals(user.loginId, LOGIN_ID);
 		userStorageView.MCR.assertParameters("getUserById", 0, "aUserId");
 		userStorageView.MCR.assertReturn("getUserById", 0, user);
 		userStorageView.MCR.assertNumberOfCallsToMethod("getUserById", 1);
@@ -77,7 +91,7 @@ public class UserInStorageUserPickerTest {
 		userStorageView.MRV.setThrowException("getUserById",
 				UserStorageViewException.usingMessage("error from spy"), "unknownUser");
 
-		user = pickUserUsingIdInStorage("unknownUser");
+		User user = pickUserUsingIdInStorage("unknownUser");
 
 		userStorageView.MCR.assertParameters("getUserById", 0, "unknownUser");
 		userStorageView.MCR.assertParameters("getUserById", 1, GUEST_ID);
@@ -91,66 +105,60 @@ public class UserInStorageUserPickerTest {
 
 	@Test
 	public void testInactiveUserReturnsGuest() {
-		User userToReturnFromStorage = new User("someUserId");
+		User userToReturnFromStorage = new User(USER_ID);
 		userToReturnFromStorage.active = false;
 
 		userStorageView.MRV.setReturnValues("getUserById", List.of(userToReturnFromStorage),
 				"anyUserId");
 
-		user = pickUserUsingIdInStorage("anyUserId");
+		User user = pickUserUsingIdInStorage("anyUserId");
 
 		userStorageView.MCR.assertParameters("getUserById", 0, "anyUserId");
 		userStorageView.MCR.assertParameters("getUserById", 1, GUEST_ID);
 		userStorageView.MCR.assertReturn("getUserById", 1, user);
 	}
 
-	private User pickUserUsingIdFromLogin(String idFromLogin) {
-		UserInfo userInfo = UserInfo.withLoginId(idFromLogin);
+	private User pickUserUsingLoginId(String loginId) {
+		UserInfo userInfo = UserInfo.withLoginId(loginId);
 		User user = userPicker.pickUser(userInfo);
 		return user;
 	}
 
 	@Test
-	public void testPickUser_idFromLogin() {
-		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+	public void testPickUser_loginId() {
+		User user = pickUserUsingLoginId(LOGIN_ID);
 
-		assertEquals(user.loginId, "fitnesse@ub.uu.se");
-		userStorageView.MCR.assertParameters("getUserByIdFromLogin", 0, "fitnesse@ub.uu.se");
-		userStorageView.MCR.assertReturn("getUserByIdFromLogin", 0, user);
-		userStorageView.MCR.assertNumberOfCallsToMethod("getUserByIdFromLogin", 1);
+		assertEquals(user.loginId, LOGIN_ID);
+		userStorageView.MCR.assertParameters("getUserByLoginId", 0, LOGIN_ID);
+		userStorageView.MCR.assertReturn("getUserByLoginId", 0, user);
+		userStorageView.MCR.assertNumberOfCallsToMethod("getUserByLoginId", 1);
 	}
 
 	@Test
-	public void testUnknownUserIsGuest_idFromLogin() {
-		userStorageView.MRV.setThrowException("getUserByIdFromLogin",
+	public void testUnknownUserIsGuest_loginId() {
+		userStorageView.MRV.setThrowException("getUserByLoginId",
 				UserStorageViewException.usingMessage("error from spy"), "fitnesse@ub.uu.se");
 
-		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+		User user = pickUserUsingLoginId("fitnesse@ub.uu.se");
 
-		userStorageView.MCR.assertParameters("getUserByIdFromLogin", 0, "fitnesse@ub.uu.se");
+		userStorageView.MCR.assertParameters("getUserByLoginId", 0, "fitnesse@ub.uu.se");
 		userStorageView.MCR.assertParameters("getUserById", 0, GUEST_ID);
 		userStorageView.MCR.assertReturn("getUserById", 0, user);
 	}
 
 	@Test
-	public void testInactiveUserReturnsGuest_idFromLogin() {
-		User userToReturnFromStorage = new User("someUserId");
+	public void testInactiveUserReturnsGuest_loginId() {
+		User userToReturnFromStorage = new User(USER_ID);
 		userToReturnFromStorage.active = false;
 
-		userStorageView.MRV.setReturnValues("getUserByIdFromLogin",
-				List.of(userToReturnFromStorage), "fitnesse@ub.uu.se");
+		userStorageView.MRV.setReturnValues("getUserByLoginId", List.of(userToReturnFromStorage),
+				"fitnesse@ub.uu.se");
 
-		user = pickUserUsingIdFromLogin("fitnesse@ub.uu.se");
+		User user = pickUserUsingLoginId("fitnesse@ub.uu.se");
 
-		userStorageView.MCR.assertParameters("getUserByIdFromLogin", 0, "fitnesse@ub.uu.se");
+		userStorageView.MCR.assertParameters("getUserByLoginId", 0, "fitnesse@ub.uu.se");
 		userStorageView.MCR.assertParameters("getUserById", 0, GUEST_ID);
 		userStorageView.MCR.assertReturn("getUserById", 0, user);
 	}
 
-	// @Test
-	// public void testInactiveUserFromLoginReturnsGuest() {
-	// user = pickUserUsingIdFromLogin("other@ub.uu.se");
-	// assertUserId(GUEST_ID);
-	// assertOnlyOneUserRole("guest");
-	// }
 }
